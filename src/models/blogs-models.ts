@@ -12,6 +12,13 @@ export type BlogsTypeInput = {
     websiteUrl: string
 }
 
+export type BlogsTypeToBD = {
+    name: string
+    description: string
+    websiteUrl: string
+    createdAt: string
+}
+
 export type BlogsIdParams = {
     id: string
 }

@@ -1,6 +1,6 @@
 import {blogsCollection} from "./db"
 import {ObjectId} from "mongodb"
-import {BlogsTypeOutput} from "../models/blogs-models";
+import {BlogsTypeOutput, BlogsTypeToBD} from "../models/blogs-models"
 
 const getOutputBlog = (blog: any): BlogsTypeOutput => {
     return {
@@ -28,19 +28,13 @@ export const blogsRepository = {
         }
         return null
     },
-    async createBlog(name: string, desc: string, url: string) {
-        const createdBlog = {
-            name: name,
-            description: desc,
-            websiteUrl: url,
-            createdAt: new Date().toISOString()
-        }
+    async createBlog(createdBlog: BlogsTypeToBD) {
         const res = await blogsCollection.insertOne(createdBlog)
         return {
             id: res.insertedId.toString(),
-            name: name,
-            description: desc,
-            websiteUrl: url,
+            name: createdBlog.name,
+            description: createdBlog.description,
+            websiteUrl: createdBlog.websiteUrl,
             createdAt: createdBlog.createdAt
         }
     },
