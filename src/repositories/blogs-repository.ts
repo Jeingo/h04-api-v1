@@ -1,6 +1,6 @@
 import {blogsCollection} from "./db"
 import {ObjectId} from "mongodb"
-import {BlogsTypeOutput, BlogsTypeToBD} from "../models/blogs-models"
+import {BlogsTypeOutput, BlogsTypeToDB} from "../models/blogs-models"
 
 const getOutputBlog = (blog: any): BlogsTypeOutput => {
     return {
@@ -28,7 +28,7 @@ export const blogsRepository = {
         }
         return null
     },
-    async createBlog(createdBlog: BlogsTypeToBD) {
+    async createBlog(createdBlog: BlogsTypeToDB) {
         const res = await blogsCollection.insertOne(createdBlog)
         return {
             id: res.insertedId.toString(),

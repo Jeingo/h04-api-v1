@@ -12,7 +12,7 @@ export type BlogsTypeInput = {
     websiteUrl: string
 }
 
-export type BlogsTypeToBD = {
+export type BlogsTypeToDB = {
     name: string
     description: string
     websiteUrl: string

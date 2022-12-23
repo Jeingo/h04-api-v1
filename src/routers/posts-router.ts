@@ -1,6 +1,6 @@
 import {Router, Request, Response} from 'express'
 import {HTTP_STATUSES} from "../constats/status"
-import {postsRepository} from "../repositories/posts-repository"
+import {postsService} from "../domain/posts-service"
 import {inputValidation} from "../middleware/input-validation"
 import {
     blogIdValidation,
@@ -9,20 +9,20 @@ import {
     titleValidation
 } from "../middleware/input-posts-validation"
 import {auth} from "../authorization/basic-auth"
-import {PostsIdParams, PostsTypeInput, PostsTypeOutput} from "../models/posts-models";
-import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../models/types";
+import {PostsIdParams, PostsTypeInput, PostsTypeOutput} from "../models/posts-models"
+import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../models/types"
 
 export const postsRouter = Router({})
 
 postsRouter.get('/', async (req: Request,
                                          res: Response<PostsTypeOutput[]>) => {
-    const allPosts = await postsRepository.getAllPost()
+    const allPosts = await postsService.getAllPost()
     res.status(HTTP_STATUSES.OK_200).json(allPosts)
 })
 
 postsRouter.get('/:id', async (req: RequestWithParams<PostsIdParams>,
                                             res: Response<PostsTypeOutput>) => {
-    const foundPost = await postsRepository.getPostById(req.params.id)
+    const foundPost = await postsService.getPostById(req.params.id)
 
     if(!foundPost) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
@@ -41,7 +41,7 @@ postsRouter.post('/',
     inputValidation,
     async (req: RequestWithBody<PostsTypeInput>,
            res: Response<PostsTypeOutput| null>) => {
-    const createdPost = await postsRepository.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+    const createdPost = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
     res.status(HTTP_STATUSES.CREATED_201).json(createdPost)
 })
 
@@ -53,7 +53,7 @@ postsRouter.put('/:id',
     inputValidation,
     async (req: RequestWithParamsAndBody<PostsIdParams, PostsTypeInput>,
            res: Response) => {
-    const updatedPost = await postsRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
+    const updatedPost = await postsService.updatePost(req.params.id, req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
 
     if(!updatedPost) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
@@ -64,7 +64,7 @@ postsRouter.put('/:id',
 })
 
 postsRouter.delete('/:id', async (req: RequestWithParams<PostsIdParams>, res: Response) => {
-    const deletedPost = await postsRepository.deletePost(req.params.id)
+    const deletedPost = await postsService.deletePost(req.params.id)
 
     if(!deletedPost) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)

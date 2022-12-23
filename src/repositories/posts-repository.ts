@@ -1,6 +1,6 @@
-import {blogsCollection, postsCollection} from "./db"
+import {postsCollection} from "./db"
 import {ObjectId} from "mongodb"
-import {PostsTypeOutput} from "../models/posts-models";
+import {PostsTypeOutput, PostsTypeToDB} from "../models/posts-models"
 
 const getOutputPost = (post: any): PostsTypeOutput => {
     return {
@@ -29,43 +29,27 @@ export const postsRepository = {
         }
             return null
     },
-    async createPost(title: string, desc: string, content: string, blogId: string) {
-        const foundBlog = await blogsCollection.findOne({_id: new ObjectId(blogId)})
-        if(foundBlog) {
-            const createdPost = {
-                title: title,
-                shortDescription: desc,
-                content: content,
-                blogId: blogId,
-                blogName: foundBlog.name,
-                createdAt: new Date().toISOString()
-            }
+    async createPost(createdPost: PostsTypeToDB) {
             const res = await postsCollection.insertOne(createdPost)
             return {
                 id: res.insertedId.toString(),
-                title: title,
-                shortDescription: desc,
-                content: content,
-                blogId: blogId,
-                blogName: foundBlog.name,
+                title: createdPost.title,
+                shortDescription: createdPost.shortDescription,
+                content: createdPost.content,
+                blogId: createdPost.blogId,
+                blogName: createdPost.blogName,
                 createdAt: createdPost.createdAt
             }
-        }
-        return null
     },
-    async updatePost(id: string, title: string, desc: string, content: string, blogId: string) {
+    async updatePost(id: string, title: string, desc: string, content: string, blogId: string, blogName: string) {
         if(!ObjectId.isValid(id) || !ObjectId.isValid(blogId)) {
-            console.log('here')
             return null
         }
-        const foundBlog = await blogsCollection.findOne({_id: new ObjectId(blogId)})
-        if(foundBlog) {
-            const updatePost = await postsCollection
-                .updateOne({_id: new ObjectId(id)},
-                    {$set: {title: title, shortDescription: desc, content: content, blogId: blogId, blogName: foundBlog.name}})
-            return updatePost.matchedCount === 1
-        }
-        return null
+
+        const updatePost = await postsCollection
+            .updateOne({_id: new ObjectId(id)},
+                {$set: {title: title, shortDescription: desc, content: content, blogId: blogId, blogName: blogName}})
+        return updatePost.matchedCount === 1
     },
     async deletePost(id: string) {
         if(!ObjectId.isValid(id)) {
