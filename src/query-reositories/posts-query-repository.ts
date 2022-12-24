@@ -67,7 +67,8 @@ export const postsQueryRepository = {
             .skip(skipNumber)
             .limit(+pageSize)
             .toArray()
-        if(res) {
+        console.log(res)
+        if(res.length !== 0) {
             return getOutputPostWithQuery(res.map(getOutputPost), +pageSize, +pageNumber, countAllDocuments)
         }
         return null
