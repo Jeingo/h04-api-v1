@@ -1,5 +1,5 @@
 import {PostsTypeOutput, PostsTypeWithQuery} from "../models/posts-models"
-import {postsCollection} from "../repositories/db"
+import {blogsCollection, postsCollection} from "../repositories/db"
 import {ObjectId} from "mongodb"
 import {QueryPosts} from "../models/query-models";
 
@@ -57,6 +57,10 @@ export const postsQueryRepository = {
         if(!ObjectId.isValid(id)) {
             return null
         }
+        const foundBlogs = await blogsCollection.findOne({_id: new ObjectId(id)})
+        if(!foundBlogs) {
+            return null
+        }
         const countAllDocuments = await postsCollection.countDocuments({blogId: id})
         const {sortBy = 'createdAt', sortDirection = 'desc', pageNumber = 1, pageSize = 10} = query
         const sortDirectionNumber = makeDirectionToNumber(sortDirection)
@@ -67,10 +71,7 @@ export const postsQueryRepository = {
             .skip(skipNumber)
             .limit(+pageSize)
             .toArray()
-        console.log(res)
-        if(res.length !== 0) {
-            return getOutputPostWithQuery(res.map(getOutputPost), +pageSize, +pageNumber, countAllDocuments)
-        }
-        return null
+
+        return getOutputPostWithQuery(res.map(getOutputPost), +pageSize, +pageNumber, countAllDocuments)
     }
 }
