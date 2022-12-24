@@ -14,8 +14,8 @@ const getOutputBlog = (blog: any): BlogsTypeOutput => {
 
 export const blogsRepository = {
     async getAllBlogs() {
-        const tmpRes = await blogsCollection.find({}).toArray()
-        return tmpRes.map(getOutputBlog)
+        const res = await blogsCollection.find({}).toArray()
+        return res.map(getOutputBlog)
     },
     async getBlogById(id: string) {
         if(!ObjectId.isValid(id)) {

@@ -13,13 +13,15 @@ import {BlogsIdParams, BlogsTypeInput, BlogsTypeOutput} from "../models/blogs-mo
 import {contentValidation, shortDescriptionValidation, titleValidation} from "../middleware/input-posts-validation";
 import {PostsIdParams, PostsTypeInputInBlog, PostsTypeOutput} from "../models/posts-models";
 import {postsService} from "../domain/posts-service";
+import {blogsQueryRepository} from "../query-reositories/blogs-query-repository";
+import {postsQueryRepository} from "../query-reositories/posts-query-repository";
 
 
 export const blogsRouter = Router({})
 
 blogsRouter.get('/', async (req: Request,
                                          res: Response<BlogsTypeOutput[]>) => {
-    const allBlogs = await blogsService.getAllBlogs()
+    const allBlogs = await blogsQueryRepository.getAllBlogs()
     res.status(HTTP_STATUSES.OK_200).json(allBlogs)
 })
 
@@ -37,7 +39,7 @@ blogsRouter.get('/:id', async (req: RequestWithParams<BlogsIdParams>,
 blogsRouter.get('/:id/posts',
     async (req: RequestWithParams<PostsIdParams>,
            res: Response<PostsTypeOutput[]| null>) => {
-        const foundPosts = await postsService.getPostsById(req.params.id)
+        const foundPosts = await postsQueryRepository.getPostsById(req.params.id)
 
         if(!foundPosts) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
