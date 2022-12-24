@@ -2,6 +2,7 @@ import request from 'supertest'
 import {app} from '../../src/app'
 import {HTTP_STATUSES} from '../../src/constats/status'
 import {BlogsTypeInput} from "../../src/models/blogs-models"
+import {PostsTypeInputInBlog} from "../../src/models/posts-models";
 
 
 const correctBlog: BlogsTypeInput = {
@@ -22,6 +23,18 @@ const incorrectBlog: BlogsTypeInput = {
     websiteUrl: ''
 }
 
+const correctPostById: PostsTypeInputInBlog = {
+    title: 'Title',
+    shortDescription: 'Short Description',
+    content: 'Content'
+}
+
+const incorrectPostById: PostsTypeInputInBlog = {
+    title: '',
+    shortDescription: '',
+    content: ''
+}
+
 const errorsMessage = {
     "errorsMessages": [
         {
@@ -35,6 +48,23 @@ const errorsMessage = {
         {
             "message": "Shouldn't be empty",
             "field": "websiteUrl"
+        }
+    ]
+}
+
+const errorsMessagePost = {
+    "errorsMessages": [
+        {
+            "message": "Shouldn't be empty",
+            "field": "title"
+        },
+        {
+            "message": "Shouldn't be empty",
+            "field": "shortDescription"
+        },
+        {
+            "message": "Shouldn't be empty",
+            "field": "content"
         }
     ]
 }
@@ -152,5 +182,69 @@ describe('/blogs', () => {
         await request(app)
             .get('/blogs')
             .expect(HTTP_STATUSES.OK_200, [])
+    })
+    let createdBlog2 : any = null
+    it(`POST /blogs/id/posts: shouldn't create post by blog's id without authorization`, async () => {
+        const createdResponse = await request(app)
+            .post('/blogs')
+            .auth('admin', 'qwerty')
+            .send(correctBlog)
+            .expect(HTTP_STATUSES.CREATED_201)
+        createdBlog2 = createdResponse.body
+        await request(app)
+            .post('/blogs'+ '/' + createdBlog2.id + '/posts')
+            .send(correctPostById)
+            .expect(HTTP_STATUSES.UNAUTHORIZED_401)
+        await request(app)
+            .get('/posts')
+            .expect(HTTP_STATUSES.OK_200, [])
+    })
+    it(`POST /blogs/id/posts: shouldn't create post by blog's id with incorrect data`, async () => {
+        const errMes = await request(app)
+            .post('/blogs'+ '/' + createdBlog2.id + '/posts')
+            .auth('admin', 'qwerty')
+            .send(incorrectPostById)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+        expect(errMes.body).toEqual(errorsMessagePost)
+    })
+    let createdPost:any = null
+    it(`POST /blogs/id/posts: should create posts by blog's id with correct data`, async () => {
+        const createdResponse = await request(app)
+            .post('/blogs'+ '/' + createdBlog2.id + '/posts')
+            .auth('admin', 'qwerty')
+            .send(correctPostById)
+            .expect(HTTP_STATUSES.CREATED_201)
+        createdPost = createdResponse.body
+        expect(createdPost).toEqual({
+            id: expect.any(String),
+            ...correctPostById,
+            blogId: createdBlog2.id,
+            blogName: createdBlog2.name,
+            createdAt: expect.any(String)
+        })
+    })
+    it(`POST /blogs/bad-id/posts: should return 404 for not existing post by blog's id`, async () => {
+        await request(app)
+            .post('/blogs/999/posts')
+            .auth('admin', 'qwerty')
+            .send(correctPostById)
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+    it(`GET /blogs/bad-id/posts: should return 404 for not existing post by blog's id`, async () => {
+        await request(app)
+            .get('/blogs/999/posts')
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+    it(`GET /blogs/id/posts: should return post by blog's id`, async () => {
+        const response = await request(app)
+            .get('/blogs'+ '/' + createdBlog2.id + '/posts')
+            .expect(HTTP_STATUSES.OK_200)
+        expect(response.body).toEqual([{
+            id: expect.any(String),
+            ...correctPostById,
+            blogId: createdBlog2.id,
+            blogName: createdBlog2.name,
+            createdAt: expect.any(String)
+        }])
     })
 })

@@ -1,8 +1,8 @@
 import request from 'supertest'
 import {app} from '../../src/app'
 import {HTTP_STATUSES} from '../../src/constats/status'
-import {PostsTypeInput} from "../../src/models/posts-models";
-import {BlogsTypeInput} from "../../src/models/blogs-models";
+import {PostsTypeInput} from "../../src/models/posts-models"
+import {BlogsTypeInput} from "../../src/models/blogs-models"
 
 const correctBlog: BlogsTypeInput = {
     name: 'Name',
@@ -10,14 +10,14 @@ const correctBlog: BlogsTypeInput = {
     websiteUrl: 'https://testurl.com'
 }
 
-// ID
+
 const correctPost: PostsTypeInput = {
     title: 'Title',
     shortDescription: 'Short Description',
     content: 'Content',
     blogId: '1'
 }
-// ID
+
 const correctNewPost: PostsTypeInput = {
     title: 'TitleNew',
     shortDescription: 'Short Description New',

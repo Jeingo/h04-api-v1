@@ -16,8 +16,8 @@ const getOutputPost = (post: any): PostsTypeOutput => {
 
 export const postsRepository = {
     async getAllPost() {
-        const tmpRes = await postsCollection.find({}).toArray()
-        return tmpRes.map(getOutputPost)
+        const res = await postsCollection.find({}).toArray()
+        return res.map(getOutputPost)
     },
     async getPostById(id: string) {
         if(!ObjectId.isValid(id)) {
@@ -28,6 +28,17 @@ export const postsRepository = {
             return getOutputPost(res)
         }
             return null
+    },
+    async getPostsById(id: string) {
+        if(!ObjectId.isValid(id)) {
+            return null
+        }
+        const res = await postsCollection.find({blogId: id}).toArray()
+        console.log(res)
+        if(res) {
+            return res.map(getOutputPost)
+        }
+        return null
     },
     async createPost(createdPost: PostsTypeToDB) {
             const res = await postsCollection.insertOne(createdPost)

@@ -8,6 +8,9 @@ export const postsService = {
     async getPostById(id: string) {
         return await postsRepository.getPostById(id)
     },
+    async getPostsById(id: string) {
+        return await postsRepository.getPostsById(id)
+    },
     async createPost(title: string, desc: string, content: string, blogId: string) {
         const foundBlog = await blogsRepository.getBlogById(blogId)
         if(foundBlog) {

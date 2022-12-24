@@ -15,6 +15,12 @@ export type PostsTypeInput = {
     blogId: string
 }
 
+export type PostsTypeInputInBlog = {
+    title: string
+    shortDescription: string
+    content: string
+}
+
 export type PostsTypeToDB = {
     title: string
     shortDescription: string

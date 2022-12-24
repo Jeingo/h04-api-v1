@@ -10,6 +10,9 @@ import {
 import {auth} from "../authorization/basic-auth"
 import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../models/types"
 import {BlogsIdParams, BlogsTypeInput, BlogsTypeOutput} from "../models/blogs-models"
+import {contentValidation, shortDescriptionValidation, titleValidation} from "../middleware/input-posts-validation";
+import {PostsIdParams, PostsTypeInputInBlog, PostsTypeOutput} from "../models/posts-models";
+import {postsService} from "../domain/posts-service";
 
 
 export const blogsRouter = Router({})
@@ -31,6 +34,19 @@ blogsRouter.get('/:id', async (req: RequestWithParams<BlogsIdParams>,
     res.json(foundBlog)
 })
 
+blogsRouter.get('/:id/posts',
+    async (req: RequestWithParams<PostsIdParams>,
+           res: Response<PostsTypeOutput[]| null>) => {
+        const foundPosts = await postsService.getPostsById(req.params.id)
+
+        if(!foundPosts) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            return
+        }
+
+        res.json(foundPosts)
+    })
+
 blogsRouter.use(auth)
 
 blogsRouter.post('/',
@@ -43,6 +59,23 @@ blogsRouter.post('/',
     const createdBlog = await blogsService.createBlog(req.body.name, req.body.description, req.body.websiteUrl)
     res.status(HTTP_STATUSES.CREATED_201).json(createdBlog)
 })
+
+blogsRouter.post('/:id/posts',
+    titleValidation,
+    shortDescriptionValidation,
+    contentValidation,
+    inputValidation,
+    async (req: RequestWithParamsAndBody<PostsIdParams,PostsTypeInputInBlog>,
+           res: Response<PostsTypeOutput| null>) => {
+        const createdPost = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.id)
+
+        if(!createdPost) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            return
+        }
+
+        res.status(HTTP_STATUSES.CREATED_201).json(createdPost)
+    })
 
 blogsRouter.put('/:id',
     nameValidation,
