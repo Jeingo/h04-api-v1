@@ -34,7 +34,6 @@ export const postsRepository = {
             return null
         }
         const res = await postsCollection.find({blogId: id}).toArray()
-        console.log(res)
         if(res) {
             return res.map(getOutputPost)
         }
