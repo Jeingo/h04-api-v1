@@ -8,20 +8,21 @@ import {
     websiteUrlValidation
 } from "../middleware/input-blogs-vallidation"
 import {auth} from "../authorization/basic-auth"
-import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../models/types"
+import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../models/types"
 import {BlogsIdParams, BlogsTypeInput, BlogsTypeOutput} from "../models/blogs-models"
 import {contentValidation, shortDescriptionValidation, titleValidation} from "../middleware/input-posts-validation";
 import {PostsIdParams, PostsTypeInputInBlog, PostsTypeOutput} from "../models/posts-models";
 import {postsService} from "../domain/posts-service";
 import {blogsQueryRepository} from "../query-reositories/blogs-query-repository";
 import {postsQueryRepository} from "../query-reositories/posts-query-repository";
+import {Query} from "../models/query-models";
 
 
 export const blogsRouter = Router({})
 
-blogsRouter.get('/', async (req: Request,
+blogsRouter.get('/', async (req: RequestWithQuery<Query>,
                                          res: Response<BlogsTypeOutput[]>) => {
-    const allBlogs = await blogsQueryRepository.getAllBlogs()
+    const allBlogs = await blogsQueryRepository.getAllBlogs(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allBlogs)
 })
 
