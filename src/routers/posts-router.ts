@@ -1,4 +1,4 @@
-import {Router, Request, Response} from 'express'
+import {Router, Response} from 'express'
 import {HTTP_STATUSES} from "../constats/status"
 import {postsService} from "../domain/posts-service"
 import {inputValidation} from "../middleware/input-validation"
@@ -9,7 +9,7 @@ import {
     titleValidation
 } from "../middleware/input-posts-validation"
 import {auth} from "../authorization/basic-auth"
-import {PostsIdParams, PostsTypeInput, PostsTypeOutput} from "../models/posts-models"
+import {PostsIdParams, PostsTypeInput, PostsTypeOutput, PostsTypeWithQuery} from "../models/posts-models"
 import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../models/types"
 import {postsQueryRepository} from "../query-reositories/posts-query-repository";
 import {QueryPosts} from "../models/query-models";
@@ -17,7 +17,7 @@ import {QueryPosts} from "../models/query-models";
 export const postsRouter = Router({})
 
 postsRouter.get('/', async (req: RequestWithQuery<QueryPosts>,
-                                         res: Response<PostsTypeOutput[]>) => {
+                                         res: Response<PostsTypeWithQuery>) => {
     const allPosts = await postsQueryRepository.getAllPost(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allPosts)
 })

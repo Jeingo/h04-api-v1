@@ -1,4 +1,4 @@
-import {Router, Request, Response} from 'express'
+import {Router, Response} from 'express'
 import {HTTP_STATUSES} from "../constats/status"
 import {blogsService} from "../domain/blogs-service"
 import {inputValidation} from "../middleware/input-validation"
@@ -17,7 +17,7 @@ import {
 } from "../models/types"
 import {BlogsIdParams, BlogsTypeInput, BlogsTypeOutput, BlogsTypeWithQuery} from "../models/blogs-models"
 import {contentValidation, shortDescriptionValidation, titleValidation} from "../middleware/input-posts-validation";
-import {PostsIdParams, PostsTypeInputInBlog, PostsTypeOutput} from "../models/posts-models";
+import {PostsIdParams, PostsTypeInputInBlog, PostsTypeOutput, PostsTypeWithQuery} from "../models/posts-models";
 import {postsService} from "../domain/posts-service";
 import {blogsQueryRepository} from "../query-reositories/blogs-query-repository";
 import {postsQueryRepository} from "../query-reositories/posts-query-repository";
@@ -45,7 +45,7 @@ blogsRouter.get('/:id', async (req: RequestWithParams<BlogsIdParams>,
 
 blogsRouter.get('/:id/posts',
     async (req: RequestWithParamsAndQuery<PostsIdParams, QueryBlogs>,
-           res: Response<PostsTypeOutput[]| null>) => {
+           res: Response<PostsTypeWithQuery| null>) => {
         const foundPosts = await postsQueryRepository.getPostsById(req.params.id, req.query)
 
         if(!foundPosts) {
