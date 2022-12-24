@@ -8,7 +8,13 @@ import {
     websiteUrlValidation
 } from "../middleware/input-blogs-vallidation"
 import {auth} from "../authorization/basic-auth"
-import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../models/types"
+import {
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithParamsAndQuery,
+    RequestWithQuery
+} from "../models/types"
 import {BlogsIdParams, BlogsTypeInput, BlogsTypeOutput} from "../models/blogs-models"
 import {contentValidation, shortDescriptionValidation, titleValidation} from "../middleware/input-posts-validation";
 import {PostsIdParams, PostsTypeInputInBlog, PostsTypeOutput} from "../models/posts-models";
@@ -38,9 +44,9 @@ blogsRouter.get('/:id', async (req: RequestWithParams<BlogsIdParams>,
 })
 
 blogsRouter.get('/:id/posts',
-    async (req: RequestWithParams<PostsIdParams>,
+    async (req: RequestWithParamsAndQuery<PostsIdParams, Query>,
            res: Response<PostsTypeOutput[]| null>) => {
-        const foundPosts = await postsQueryRepository.getPostsById(req.params.id)
+        const foundPosts = await postsQueryRepository.getPostsById(req.params.id, req.query)
 
         if(!foundPosts) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)

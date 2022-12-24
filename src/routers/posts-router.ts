@@ -10,14 +10,15 @@ import {
 } from "../middleware/input-posts-validation"
 import {auth} from "../authorization/basic-auth"
 import {PostsIdParams, PostsTypeInput, PostsTypeOutput} from "../models/posts-models"
-import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../models/types"
+import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../models/types"
 import {postsQueryRepository} from "../query-reositories/posts-query-repository";
+import {Query} from "../models/query-models";
 
 export const postsRouter = Router({})
 
-postsRouter.get('/', async (req: Request,
+postsRouter.get('/', async (req: RequestWithQuery<Query>,
                                          res: Response<PostsTypeOutput[]>) => {
-    const allPosts = await postsQueryRepository.getAllPost()
+    const allPosts = await postsQueryRepository.getAllPost(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allPosts)
 })
 

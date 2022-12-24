@@ -23,6 +23,8 @@ const makeDirectionToNumber = (val: string) => {
     }
 }
 
+
+
 export const blogsQueryRepository = {
     async getAllBlogs(query: Query) {
         const {searchNameTerm = null, sortBy = 'createdAt', sortDirection = 'desc', pageNumber = 1, pageSize = 10} = query
