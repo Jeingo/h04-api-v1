@@ -32,6 +32,7 @@ blogsRouter.get('/', async (req: RequestWithQuery<QueryBlogs>,
     res.status(HTTP_STATUSES.OK_200).json(allBlogs)
 })
 
+
 blogsRouter.get('/:id', async (req: RequestWithParams<BlogsIdParams>,
                                             res: Response<BlogsTypeOutput>) => {
     const foundBlog = await blogsService.getBlogById(req.params.id)
