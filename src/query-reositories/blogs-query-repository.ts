@@ -1,6 +1,6 @@
-import {BlogsTypeOutput} from "../models/blogs-models"
+import {BlogsTypeOutput, BlogsTypeWithQuery} from "../models/blogs-models"
 import {blogsCollection} from "../repositories/db"
-import {Query} from "../models/query-models"
+import {QueryBlogs} from "../models/query-models"
 
 const getOutputBlog = (blog: any): BlogsTypeOutput => {
     return {
@@ -10,6 +10,20 @@ const getOutputBlog = (blog: any): BlogsTypeOutput => {
         websiteUrl: blog.websiteUrl,
         createdAt: blog.createdAt
     }
+}
+
+const getOutputBlogWithQuery = (blogs: BlogsTypeOutput[],
+                                pS: number,
+                                pN: number,
+                                countDoc: number) : BlogsTypeWithQuery => {
+    const res = {
+        pagesCount: Math.ceil(countDoc/pS),
+        page: pN,
+        pageSize: pS,
+        totalCount: countDoc,
+        items: blogs
+    }
+    return res
 }
 
 const makeDirectionToNumber = (val: string) => {
@@ -23,10 +37,9 @@ const makeDirectionToNumber = (val: string) => {
     }
 }
 
-
-
 export const blogsQueryRepository = {
-    async getAllBlogs(query: Query) {
+    async getAllBlogs(query: QueryBlogs) {
+        const countAllDocuments = await blogsCollection.countDocuments()
         const {searchNameTerm = null, sortBy = 'createdAt', sortDirection = 'desc', pageNumber = 1, pageSize = 10} = query
         const sortDirectionNumber = makeDirectionToNumber(sortDirection)
         const skipNumber = (+pageNumber - 1) * +pageSize
@@ -38,14 +51,15 @@ export const blogsQueryRepository = {
                 .skip(skipNumber)
                 .limit(+pageSize)
                 .toArray()
-            return res.map(getOutputBlog)
+        } else {
+            res = await blogsCollection
+                .find({})
+                .sort({[sortBy]: sortDirectionNumber})
+                .skip(skipNumber)
+                .limit(+pageSize)
+                .toArray()
         }
-        res = await blogsCollection
-            .find()
-            .sort({[sortBy]: sortDirectionNumber})
-            .skip(skipNumber)
-            .limit(+pageSize)
-            .toArray()
-        return res.map(getOutputBlog)
+        const resWithQuery = getOutputBlogWithQuery(res.map(getOutputBlog), +pageSize, +pageNumber, countAllDocuments)
+        return resWithQuery
     }
 }

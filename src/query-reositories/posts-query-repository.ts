@@ -1,7 +1,7 @@
 import {PostsTypeOutput} from "../models/posts-models"
 import {postsCollection} from "../repositories/db"
 import {ObjectId} from "mongodb"
-import {Query} from "../models/query-models";
+import {QueryPosts} from "../models/query-models";
 
 const getOutputPost = (post: any): PostsTypeOutput => {
     return {
@@ -27,7 +27,7 @@ const makeDirectionToNumber = (val: string) => {
 }
 
 export const postsQueryRepository = {
-    async getAllPost(query: Query) {
+    async getAllPost(query: QueryPosts) {
         const {sortBy = 'createdAt', sortDirection = 'desc', pageNumber = 1, pageSize = 10} = query
         const sortDirectionNumber = makeDirectionToNumber(sortDirection)
         const skipNumber = (+pageNumber - 1) * +pageSize
@@ -39,7 +39,7 @@ export const postsQueryRepository = {
             .toArray()
         return res.map(getOutputPost)
     },
-    async getPostsById(id: string, query: Query) {
+    async getPostsById(id: string, query: QueryPosts) {
         if(!ObjectId.isValid(id)) {
             return null
         }

@@ -12,11 +12,11 @@ import {auth} from "../authorization/basic-auth"
 import {PostsIdParams, PostsTypeInput, PostsTypeOutput} from "../models/posts-models"
 import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../models/types"
 import {postsQueryRepository} from "../query-reositories/posts-query-repository";
-import {Query} from "../models/query-models";
+import {QueryPosts} from "../models/query-models";
 
 export const postsRouter = Router({})
 
-postsRouter.get('/', async (req: RequestWithQuery<Query>,
+postsRouter.get('/', async (req: RequestWithQuery<QueryPosts>,
                                          res: Response<PostsTypeOutput[]>) => {
     const allPosts = await postsQueryRepository.getAllPost(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allPosts)

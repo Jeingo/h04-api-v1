@@ -19,6 +19,14 @@ export type BlogsTypeToDB = {
     createdAt: string
 }
 
+export type BlogsTypeWithQuery = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: BlogsTypeOutput[]
+}
+
 export type BlogsIdParams = {
     id: string
 }

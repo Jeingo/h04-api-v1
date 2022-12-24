@@ -15,19 +15,19 @@ import {
     RequestWithParamsAndQuery,
     RequestWithQuery
 } from "../models/types"
-import {BlogsIdParams, BlogsTypeInput, BlogsTypeOutput} from "../models/blogs-models"
+import {BlogsIdParams, BlogsTypeInput, BlogsTypeOutput, BlogsTypeWithQuery} from "../models/blogs-models"
 import {contentValidation, shortDescriptionValidation, titleValidation} from "../middleware/input-posts-validation";
 import {PostsIdParams, PostsTypeInputInBlog, PostsTypeOutput} from "../models/posts-models";
 import {postsService} from "../domain/posts-service";
 import {blogsQueryRepository} from "../query-reositories/blogs-query-repository";
 import {postsQueryRepository} from "../query-reositories/posts-query-repository";
-import {Query} from "../models/query-models";
+import {QueryBlogs} from "../models/query-models";
 
 
 export const blogsRouter = Router({})
 
-blogsRouter.get('/', async (req: RequestWithQuery<Query>,
-                                         res: Response<BlogsTypeOutput[]>) => {
+blogsRouter.get('/', async (req: RequestWithQuery<QueryBlogs>,
+                                         res: Response<BlogsTypeWithQuery>) => {
     const allBlogs = await blogsQueryRepository.getAllBlogs(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allBlogs)
 })
@@ -44,7 +44,7 @@ blogsRouter.get('/:id', async (req: RequestWithParams<BlogsIdParams>,
 })
 
 blogsRouter.get('/:id/posts',
-    async (req: RequestWithParamsAndQuery<PostsIdParams, Query>,
+    async (req: RequestWithParamsAndQuery<PostsIdParams, QueryBlogs>,
            res: Response<PostsTypeOutput[]| null>) => {
         const foundPosts = await postsQueryRepository.getPostsById(req.params.id, req.query)
 
