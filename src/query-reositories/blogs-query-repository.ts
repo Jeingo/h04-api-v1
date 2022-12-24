@@ -45,12 +45,14 @@ export const blogsQueryRepository = {
         const skipNumber = (+pageNumber - 1) * +pageSize
         let res = null
         if(searchNameTerm) {
+            const countAllDocumentsWithFilter = await blogsCollection.countDocuments({name: {$regex: new RegExp(searchNameTerm, "gi")}})
             res = await blogsCollection
                 .find({name: {$regex: new RegExp(searchNameTerm, "gi")}})
                 .sort({[sortBy]: sortDirectionNumber})
                 .skip(skipNumber)
                 .limit(+pageSize)
                 .toArray()
+            return getOutputBlogWithQuery(res.map(getOutputBlog), +pageSize, +pageNumber, countAllDocumentsWithFilter)
         } else {
             res = await blogsCollection
                 .find({})
@@ -58,8 +60,7 @@ export const blogsQueryRepository = {
                 .skip(skipNumber)
                 .limit(+pageSize)
                 .toArray()
+            return getOutputBlogWithQuery(res.map(getOutputBlog), +pageSize, +pageNumber, countAllDocuments)
         }
-        const resWithQuery = getOutputBlogWithQuery(res.map(getOutputBlog), +pageSize, +pageNumber, countAllDocuments)
-        return resWithQuery
     }
 }
