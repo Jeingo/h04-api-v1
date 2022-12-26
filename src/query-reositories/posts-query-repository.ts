@@ -54,9 +54,6 @@ export const postsQueryRepository = {
         return getOutputPostWithQuery(res.map(getOutputPost), +pageSize, +pageNumber, countAllDocuments)
     },
     async getPostsById(id: string, query: QueryPosts) {
-        if(!ObjectId.isValid(id)) {
-            return null
-        }
         const foundBlogs = await blogsCollection.findOne({_id: new ObjectId(id)})
         if(!foundBlogs) {
             return null

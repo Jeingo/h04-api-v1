@@ -1,7 +1,7 @@
 import {Router, Response} from 'express'
 import {HTTP_STATUSES} from "../constats/status"
 import {blogsService} from "../domain/blogs-service"
-import {inputValidation} from "../middleware/input-validation"
+import {idValidation, inputValidation} from "../middleware/input-validation"
 import {
     descriptionValidation,
     nameValidation,
@@ -26,18 +26,19 @@ import {QueryBlogs} from "../models/query-models";
 
 export const blogsRouter = Router({})
 
-blogsRouter.get('/', async (req: RequestWithQuery<QueryBlogs>,
-                                         res: Response<BlogsTypeWithQuery>) => {
+blogsRouter.get('/', async (req: RequestWithQuery<QueryBlogs>, res: Response<BlogsTypeWithQuery>) => {
     const allBlogs = await blogsQueryRepository.getAllBlogs(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allBlogs)
 })
 
 
-blogsRouter.get('/:id', async (req: RequestWithParams<BlogsIdParams>,
-                                            res: Response<BlogsTypeOutput>) => {
+blogsRouter.get('/:id',
+    idValidation,
+    async (req: RequestWithParams<BlogsIdParams>,
+                               res: Response<BlogsTypeOutput>) => {
     const foundBlog = await blogsService.getBlogById(req.params.id)
 
-    if(!foundBlog) {
+    if (!foundBlog) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }
@@ -45,11 +46,11 @@ blogsRouter.get('/:id', async (req: RequestWithParams<BlogsIdParams>,
 })
 
 blogsRouter.get('/:id/posts',
-    async (req: RequestWithParamsAndQuery<PostsIdParams, QueryBlogs>,
-           res: Response<PostsTypeWithQuery| null>) => {
+    idValidation,
+    async (req: RequestWithParamsAndQuery<PostsIdParams, QueryBlogs>, res: Response<PostsTypeWithQuery | null>) => {
         const foundPosts = await postsQueryRepository.getPostsById(req.params.id, req.query)
 
-        if(!foundPosts) {
+        if (!foundPosts) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
             return
         }
@@ -66,20 +67,21 @@ blogsRouter.post('/',
     inputValidation,
     async (req: RequestWithBody<BlogsTypeInput>,
            res: Response<BlogsTypeOutput>) => {
-    const createdBlog = await blogsService.createBlog(req.body.name, req.body.description, req.body.websiteUrl)
-    res.status(HTTP_STATUSES.CREATED_201).json(createdBlog)
-})
+        const createdBlog = await blogsService.createBlog(req.body.name, req.body.description, req.body.websiteUrl)
+        res.status(HTTP_STATUSES.CREATED_201).json(createdBlog)
+    })
 
 blogsRouter.post('/:id/posts',
+    idValidation,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
     inputValidation,
-    async (req: RequestWithParamsAndBody<PostsIdParams,PostsTypeInputInBlog>,
-           res: Response<PostsTypeOutput| null>) => {
+    async (req: RequestWithParamsAndBody<PostsIdParams, PostsTypeInputInBlog>,
+           res: Response<PostsTypeOutput | null>) => {
         const createdPost = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.id)
 
-        if(!createdPost) {
+        if (!createdPost) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
             return
         }
@@ -88,26 +90,29 @@ blogsRouter.post('/:id/posts',
     })
 
 blogsRouter.put('/:id',
+    idValidation,
     nameValidation,
     descriptionValidation,
     websiteUrlValidation,
     inputValidation,
-    async (req: RequestWithParamsAndBody<BlogsIdParams,BlogsTypeInput>,
+    async (req: RequestWithParamsAndBody<BlogsIdParams, BlogsTypeInput>,
            res: Response) => {
-    const updatedBlog = await blogsService.updateBlog(req.params.id, req.body.name, req.body.description, req.body.websiteUrl)
+        const updatedBlog = await blogsService.updateBlog(req.params.id, req.body.name, req.body.description, req.body.websiteUrl)
 
-    if(!updatedBlog) {
-        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
-        return
-    }
+        if (!updatedBlog) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            return
+        }
 
-    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-})
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+    })
 
-blogsRouter.delete('/:id', async (req: RequestWithParams<BlogsIdParams>, res: Response) => {
+blogsRouter.delete('/:id',
+    idValidation,
+    async (req: RequestWithParams<BlogsIdParams>, res: Response) => {
     const deletedBlog = await blogsService.deleteBlog(req.params.id)
 
-    if(!deletedBlog) {
+    if (!deletedBlog) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }

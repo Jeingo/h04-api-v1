@@ -1,7 +1,7 @@
 import {Router, Response} from 'express'
 import {HTTP_STATUSES} from "../constats/status"
 import {postsService} from "../domain/posts-service"
-import {inputValidation} from "../middleware/input-validation"
+import {idValidation, inputValidation} from "../middleware/input-validation"
 import {
     blogIdValidation,
     contentValidation,
@@ -22,7 +22,9 @@ postsRouter.get('/', async (req: RequestWithQuery<QueryPosts>,
     res.status(HTTP_STATUSES.OK_200).json(allPosts)
 })
 
-postsRouter.get('/:id', async (req: RequestWithParams<PostsIdParams>,
+postsRouter.get('/:id',
+    idValidation,
+    async (req: RequestWithParams<PostsIdParams>,
                                             res: Response<PostsTypeOutput>) => {
     const foundPost = await postsService.getPostById(req.params.id)
 
@@ -48,6 +50,7 @@ postsRouter.post('/',
 })
 
 postsRouter.put('/:id',
+    idValidation,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
@@ -65,7 +68,9 @@ postsRouter.put('/:id',
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
-postsRouter.delete('/:id', async (req: RequestWithParams<PostsIdParams>, res: Response) => {
+postsRouter.delete('/:id',
+    idValidation,
+    async (req: RequestWithParams<PostsIdParams>, res: Response) => {
     const deletedPost = await postsService.deletePost(req.params.id)
 
     if(!deletedPost) {

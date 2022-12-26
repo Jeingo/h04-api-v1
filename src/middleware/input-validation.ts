@@ -1,5 +1,7 @@
 import {validationResult} from "express-validator"
 import {NextFunction, Request, Response} from "express"
+import {ObjectId} from "mongodb";
+import {HTTP_STATUSES} from "../constats/status";
 
 const baseValidationResult = validationResult.withDefaults({
     formatter: error => {
@@ -17,4 +19,12 @@ export const inputValidation = (req: Request, res: Response, next: NextFunction)
     } else {
         next()
     }
+}
+
+export const idValidation = async (req: Request<any,any,any,any>, res: Response, next: NextFunction) => {
+    if(!ObjectId.isValid(req.params.id)) {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        return
+    }
+    next()
 }
