@@ -1,7 +1,7 @@
 import request from 'supertest'
 import {app} from '../../src/app'
 import {HTTP_STATUSES} from '../../src/constats/status'
-import {PostsTypeInput} from "../../src/models/posts-models"
+import {PostsTypeInput, PostsTypeWithQuery} from "../../src/models/posts-models"
 import {BlogsTypeInput} from "../../src/models/blogs-models"
 
 const correctBlog: BlogsTypeInput = {
@@ -31,6 +31,15 @@ const incorrectPost: PostsTypeInput = {
     content: '',
     blogId: ''
 }
+
+const emptyPosts: PostsTypeWithQuery =
+    {
+        "pagesCount": 0,
+        "page": 1,
+        "pageSize": 10,
+        "totalCount": 0,
+        "items": []
+    }
 
 const errorsMessage = {
     "errorsMessages": [
@@ -70,7 +79,7 @@ describe('/posts', () => {
     it('GET /posts: should return 200 and empty array', async () => {
         await request(app)
             .get('/posts')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, emptyPosts)
     })
     it('GET /posts/bad-id: should return 404 for not existing posts', async () => {
         await request(app)
@@ -84,7 +93,7 @@ describe('/posts', () => {
             .expect(HTTP_STATUSES.UNAUTHORIZED_401)
         await request(app)
             .get('/posts')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, emptyPosts)
     })
     it(`POST /posts: shouldn't create posts with incorrect data`, async () => {
         const errMes = await request(app)
@@ -94,7 +103,7 @@ describe('/posts', () => {
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
         await request(app)
             .get('/posts')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, emptyPosts)
         expect(errMes.body).toEqual(errorsMessage)
     })
     let createdPost : any = null
@@ -178,6 +187,6 @@ describe('/posts', () => {
             .expect(HTTP_STATUSES.NO_CONTENT_204)
         await request(app)
             .get('/posts')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, emptyPosts)
     })
 })

@@ -1,8 +1,8 @@
 import request from 'supertest'
 import {app} from '../../src/app'
 import {HTTP_STATUSES} from '../../src/constats/status'
-import {BlogsTypeInput} from "../../src/models/blogs-models"
-import {PostsTypeInputInBlog} from "../../src/models/posts-models";
+import {BlogsTypeInput, BlogsTypeWithQuery} from "../../src/models/blogs-models"
+import {PostsTypeInputInBlog, PostsTypeWithQuery} from "../../src/models/posts-models";
 
 
 const correctBlog: BlogsTypeInput = {
@@ -34,6 +34,25 @@ const incorrectPostById: PostsTypeInputInBlog = {
     shortDescription: '',
     content: ''
 }
+
+const emptyBlogs: BlogsTypeWithQuery =
+    {
+    "pagesCount": 0,
+    "page": 1,
+    "pageSize": 10,
+    "totalCount": 0,
+    "items": []
+}
+
+const emptyPosts: PostsTypeWithQuery =
+    {
+        "pagesCount": 0,
+        "page": 1,
+        "pageSize": 10,
+        "totalCount": 0,
+        "items": []
+    }
+
 
 const errorsMessage = {
     "errorsMessages": [
@@ -76,22 +95,22 @@ describe('/blogs', () => {
     it('GET /blogs: should return 200 and empty array', async () => {
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, emptyBlogs)
     })
     it('GET /blogs/bad-id: should return 404 for not existing blog', async () => {
         await request(app)
             .get('/blogs/999')
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
-     it(`POST /blogs: shouldn't create blog without authorization`, async () => {
-         await request(app)
+    it(`POST /blogs: shouldn't create blog without authorization`, async () => {
+        await request(app)
             .post('/blogs')
             .send(correctBlog)
             .expect(HTTP_STATUSES.UNAUTHORIZED_401)
-         await request(app)
-             .get('/blogs')
-             .expect(HTTP_STATUSES.OK_200, [])
-     })
+        await request(app)
+            .get('/blogs')
+            .expect(HTTP_STATUSES.OK_200, emptyBlogs)
+    })
     it(`POST /blogs: shouldn't create blog with incorrect data`, async () => {
         const errMes = await request(app)
             .post('/blogs')
@@ -100,10 +119,10 @@ describe('/blogs', () => {
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, emptyBlogs)
         expect(errMes.body).toEqual(errorsMessage)
     })
-    let createdBlog : any = null
+    let createdBlog: any = null
     it(`POST /blogs: should create blog with correct data`, async () => {
         const createdResponse = await request(app)
             .post('/blogs')
@@ -181,9 +200,9 @@ describe('/blogs', () => {
             .expect(HTTP_STATUSES.NO_CONTENT_204)
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, emptyBlogs)
     })
-    let createdBlog2 : any = null
+    let createdBlog2: any = null
     it(`POST /blogs/id/posts: shouldn't create post by blog's id without authorization`, async () => {
         const createdResponse = await request(app)
             .post('/blogs')
@@ -192,25 +211,25 @@ describe('/blogs', () => {
             .expect(HTTP_STATUSES.CREATED_201)
         createdBlog2 = createdResponse.body
         await request(app)
-            .post('/blogs'+ '/' + createdBlog2.id + '/posts')
+            .post('/blogs' + '/' + createdBlog2.id + '/posts')
             .send(correctPostById)
             .expect(HTTP_STATUSES.UNAUTHORIZED_401)
         await request(app)
             .get('/posts')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, emptyPosts)
     })
     it(`POST /blogs/id/posts: shouldn't create post by blog's id with incorrect data`, async () => {
         const errMes = await request(app)
-            .post('/blogs'+ '/' + createdBlog2.id + '/posts')
+            .post('/blogs' + '/' + createdBlog2.id + '/posts')
             .auth('admin', 'qwerty')
             .send(incorrectPostById)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
         expect(errMes.body).toEqual(errorsMessagePost)
     })
-    let createdPost:any = null
+    let createdPost: any = null
     it(`POST /blogs/id/posts: should create posts by blog's id with correct data`, async () => {
         const createdResponse = await request(app)
-            .post('/blogs'+ '/' + createdBlog2.id + '/posts')
+            .post('/blogs' + '/' + createdBlog2.id + '/posts')
             .auth('admin', 'qwerty')
             .send(correctPostById)
             .expect(HTTP_STATUSES.CREATED_201)
@@ -237,14 +256,22 @@ describe('/blogs', () => {
     })
     it(`GET /blogs/id/posts: should return post by blog's id`, async () => {
         const response = await request(app)
-            .get('/blogs'+ '/' + createdBlog2.id + '/posts')
+            .get('/blogs' + '/' + createdBlog2.id + '/posts')
             .expect(HTTP_STATUSES.OK_200)
-        expect(response.body).toEqual([{
-            id: expect.any(String),
-            ...correctPostById,
-            blogId: createdBlog2.id,
-            blogName: createdBlog2.name,
-            createdAt: expect.any(String)
-        }])
+        expect(response.body).toEqual(
+            {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [{
+                    id: expect.any(String),
+                    ...correctPostById,
+                    blogId: createdBlog2.id,
+                    blogName: createdBlog2.name,
+                    createdAt: expect.any(String)
+                }]
+            }
+        )
     })
 })
