@@ -4,3 +4,9 @@ export type UsersTypeOutput = {
     email: string
     createdAt: string
 }
+
+export type UsersTypeInput = {
+    login: string
+    email: string
+    createdAt: string
+}
