@@ -1,7 +1,7 @@
 import {Router, Response} from 'express'
 import {HTTP_STATUSES} from "../constats/status"
 import {postsService} from "../domain/posts-service"
-import {idValidation, inputValidation} from "../middleware/input-validation"
+import {idValidation, inputValidation, queryValidation} from "../middleware/input-validation"
 import {
     blogIdValidation,
     contentValidation,
@@ -24,6 +24,7 @@ postsRouter.get('/', async (req: RequestWithQuery<QueryPosts>,
 
 postsRouter.get('/:id',
     idValidation,
+    queryValidation,
     async (req: RequestWithParams<PostsIdParams>,
                                             res: Response<PostsTypeOutput>) => {
     const foundPost = await postsService.getPostById(req.params.id)

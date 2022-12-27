@@ -1,7 +1,7 @@
 import {Router, Response} from 'express'
 import {HTTP_STATUSES} from "../constats/status"
 import {blogsService} from "../domain/blogs-service"
-import {idValidation, inputValidation} from "../middleware/input-validation"
+import {idValidation, inputValidation, queryValidation} from "../middleware/input-validation"
 import {
     descriptionValidation,
     nameValidation,
@@ -26,7 +26,9 @@ import {QueryBlogs} from "../models/query-models";
 
 export const blogsRouter = Router({})
 
-blogsRouter.get('/', async (req: RequestWithQuery<QueryBlogs>, res: Response<BlogsTypeWithQuery>) => {
+blogsRouter.get('/',
+    queryValidation,
+    async (req: RequestWithQuery<QueryBlogs>, res: Response<BlogsTypeWithQuery>) => {
     const allBlogs = await blogsQueryRepository.getAllBlogs(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allBlogs)
 })
@@ -47,6 +49,7 @@ blogsRouter.get('/:id',
 
 blogsRouter.get('/:id/posts',
     idValidation,
+    queryValidation,
     async (req: RequestWithParamsAndQuery<PostsIdParams, QueryBlogs>, res: Response<PostsTypeWithQuery | null>) => {
         const foundPosts = await postsQueryRepository.getPostsById(req.params.id, req.query)
 
