@@ -15,10 +15,6 @@ const getOutputPost = (post: any): PostsTypeOutput => {
 }
 
 export const postsRepository = {
-    async getAllPost() {
-        const res = await postsCollection.find({}).toArray()
-        return res.map(getOutputPost)
-    },
     async getPostById(id: string) {
         if(!ObjectId.isValid(id)) {
             return null

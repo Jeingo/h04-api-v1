@@ -1,9 +1,6 @@
 import {blogsRepository} from "../repositories/blogs-repository"
 
 export const blogsService = {
-    async getAllBlogs() {
-        return await blogsRepository.getAllBlogs()
-    },
     async getBlogById(id: string) {
         return await blogsRepository.getBlogById(id)
     },

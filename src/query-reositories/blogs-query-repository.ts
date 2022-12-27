@@ -14,20 +14,6 @@ const getOutputBlog = (blog: any): BlogsTypeOutput => {
     }
 }
 
-// const getOutputBlogWithQuery = (blogs: BlogsTypeOutput[],
-//                                 pS: number,
-//                                 pN: number,
-//                                 countDoc: number): PaginatedType<BlogsTypeOutput> => {
-//     const res = {
-//         pagesCount: Math.ceil(countDoc / pS),
-//         page: pN,
-//         pageSize: pS,
-//         totalCount: countDoc,
-//         items: blogs
-//     }
-//     return res
-// }
-
 const makeDirectionToNumber = (val: string) => {
     switch (val) {
         case 'asc':

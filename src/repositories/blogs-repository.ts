@@ -13,10 +13,6 @@ const getOutputBlog = (blog: any): BlogsTypeOutput => {
 }
 
 export const blogsRepository = {
-    async getAllBlogs() {
-        const res = await blogsCollection.find({}).toArray()
-        return res.map(getOutputBlog)
-    },
     async getBlogById(id: string) {
         const res = await blogsCollection.findOne({_id: new ObjectId(id)})
 

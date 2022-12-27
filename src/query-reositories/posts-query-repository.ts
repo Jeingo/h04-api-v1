@@ -17,19 +17,6 @@ const getOutputPost = (post: any): PostsTypeOutput => {
     }
 }
 
-// const getOutputPostWithQuery = (posts: PostsTypeOutput[],
-//                                 pS: number,
-//                                 pN: number,
-//                                 countDoc: number) : PaginatedType<PostsTypeOutput> => {
-//     return {
-//         pagesCount: Math.ceil(countDoc/pS),
-//         page: pN,
-//         pageSize: pS,
-//         totalCount: countDoc,
-//         items: posts
-//     }
-// }
-
 const makeDirectionToNumber = (val: string) => {
     switch(val) {
         case 'asc':
