@@ -3,7 +3,7 @@ import {blogsCollection, postsCollection} from "../repositories/db"
 import {ObjectId} from "mongodb"
 import {QueryPosts} from "../models/query-models";
 import {PaginatedType} from "../models/main-models";
-import {getPaginatedType} from "./helper";
+import {getPaginatedType, makeDirectionToNumber} from "./helper";
 
 const getOutputPost = (post: any): PostsTypeOutput => {
     return {
@@ -14,17 +14,6 @@ const getOutputPost = (post: any): PostsTypeOutput => {
         blogId: post.blogId,
         blogName: post.blogName,
         createdAt: post.createdAt
-    }
-}
-
-const makeDirectionToNumber = (val: string) => {
-    switch(val) {
-        case 'asc':
-            return 1
-        case 'desc':
-            return -1
-        default:
-            return -1
     }
 }
 

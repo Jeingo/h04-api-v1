@@ -12,3 +12,5 @@ export const getPaginatedType = <T>(items: T[],
         items: items
     }
 }
+
+export const makeDirectionToNumber = (val: string) => val === 'desc' ? -1 : 1

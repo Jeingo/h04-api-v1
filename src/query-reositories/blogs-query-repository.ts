@@ -2,7 +2,7 @@ import {BlogsTypeOutput} from "../models/blogs-models"
 import {blogsCollection} from "../repositories/db"
 import {QueryBlogs} from "../models/query-models"
 import {PaginatedType} from "../models/main-models";
-import {getPaginatedType} from "./helper";
+import {getPaginatedType, makeDirectionToNumber} from "./helper";
 
 const getOutputBlog = (blog: any): BlogsTypeOutput => {
     return {
@@ -11,17 +11,6 @@ const getOutputBlog = (blog: any): BlogsTypeOutput => {
         description: blog.description,
         websiteUrl: blog.websiteUrl,
         createdAt: blog.createdAt
-    }
-}
-
-const makeDirectionToNumber = (val: string) => {
-    switch (val) {
-        case 'asc':
-            return 1
-        case 'desc':
-            return -1
-        default:
-            return -1
     }
 }
 
