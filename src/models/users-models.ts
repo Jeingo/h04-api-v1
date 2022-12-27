@@ -13,7 +13,7 @@ export type UsersTypeInput = {
 
 export type UsersTypeToDB = {
     login: string
-    password: string
+    hash: string
     email: string
     createdAt: string
 }

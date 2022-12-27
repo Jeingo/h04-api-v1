@@ -8,7 +8,7 @@ export const usersService = {
         const passwordHash = await bcrypt.hash(password, passwordSalt)
         const createdUser = {
             login: login,
-            password: passwordHash,
+            hash: passwordHash,
             email: email,
             createdAt: new Date().toISOString()
         }
@@ -16,5 +16,10 @@ export const usersService = {
     },
     async deleteUser(id: string) {
         return await usersRepository.deleteUser(id)
+    },
+    async checkCredentials(loginOrEmail: string, password: string) {
+        const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
+        if(!user) return false
+        return await bcrypt.compare(password,user.hash)
     }
 }
