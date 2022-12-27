@@ -25,13 +25,15 @@ export const usersQueryRepository = {
         } = query
         const sortDirectionNumber = makeDirectionToNumber(sortDirection)
         const skipNumber = (+pageNumber - 1) * +pageSize
-        let filter = {}
-        if (searchLoginTerm) {
-            filter = {name: {$regex: new RegExp(searchLoginTerm, "gi")}}
-        }
-        const countAllDocuments = await usersCollection.countDocuments(filter)
+
+        const filter = (a:any, b:any) => ({$or:[a,b]})
+        const loginFilter = searchLoginTerm ? {login: {$regex: new RegExp(searchLoginTerm, "gi")}} : {}
+        const emailFilter = searchEmailTerm ? {email: {$regex: new RegExp(searchEmailTerm, "gi")}} : {}
+        const filterMain = filter(loginFilter, emailFilter)
+
+        const countAllDocuments = await usersCollection.countDocuments(filterMain)
         const res = await usersCollection
-            .find(filter)
+            .find(filterMain)
             .sort({[sortBy]: sortDirectionNumber})
             .skip(skipNumber)
             .limit(+pageSize)
