@@ -15,9 +15,9 @@ const getOutputBlog = (blog: any): BlogsTypeOutput => {
 const getOutputBlogWithQuery = (blogs: BlogsTypeOutput[],
                                 pS: number,
                                 pN: number,
-                                countDoc: number) : BlogsTypeWithQuery => {
+                                countDoc: number): BlogsTypeWithQuery => {
     const res = {
-        pagesCount: Math.ceil(countDoc/pS),
+        pagesCount: Math.ceil(countDoc / pS),
         page: pN,
         pageSize: pS,
         totalCount: countDoc,
@@ -27,7 +27,7 @@ const getOutputBlogWithQuery = (blogs: BlogsTypeOutput[],
 }
 
 const makeDirectionToNumber = (val: string) => {
-    switch(val) {
+    switch (val) {
         case 'asc':
             return 1
         case 'desc':
@@ -39,28 +39,26 @@ const makeDirectionToNumber = (val: string) => {
 
 export const blogsQueryRepository = {
     async getAllBlogs(query: QueryBlogs) {
-        const countAllDocuments = await blogsCollection.countDocuments()
-        const {searchNameTerm = null, sortBy = 'createdAt', sortDirection = 'desc', pageNumber = 1, pageSize = 10} = query
+        const {
+            searchNameTerm = null,
+            sortBy = 'createdAt',
+            sortDirection = 'desc',
+            pageNumber = 1,
+            pageSize = 10
+        } = query
         const sortDirectionNumber = makeDirectionToNumber(sortDirection)
         const skipNumber = (+pageNumber - 1) * +pageSize
-        let res = null
-        if(searchNameTerm) {
-            const countAllDocumentsWithFilter = await blogsCollection.countDocuments({name: {$regex: new RegExp(searchNameTerm, "gi")}})
-            res = await blogsCollection
-                .find({name: {$regex: new RegExp(searchNameTerm, "gi")}})
-                .sort({[sortBy]: sortDirectionNumber})
-                .skip(skipNumber)
-                .limit(+pageSize)
-                .toArray()
-            return getOutputBlogWithQuery(res.map(getOutputBlog), +pageSize, +pageNumber, countAllDocumentsWithFilter)
-        } else {
-            res = await blogsCollection
-                .find({})
-                .sort({[sortBy]: sortDirectionNumber})
-                .skip(skipNumber)
-                .limit(+pageSize)
-                .toArray()
-            return getOutputBlogWithQuery(res.map(getOutputBlog), +pageSize, +pageNumber, countAllDocuments)
+        let filter = {}
+        if (searchNameTerm) {
+            filter = {name: {$regex: new RegExp(searchNameTerm, "gi")}}
         }
+        const countAllDocuments = await blogsCollection.countDocuments(filter)
+        const res = await blogsCollection
+            .find(filter)
+            .sort({[sortBy]: sortDirectionNumber})
+            .skip(skipNumber)
+            .limit(+pageSize)
+            .toArray()
+        return getOutputBlogWithQuery(res.map(getOutputBlog), +pageSize, +pageNumber, countAllDocuments)
     }
 }
