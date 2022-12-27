@@ -4,6 +4,6 @@ export const loginOrEmailValidation = body('loginOrEmail').trim()
     .notEmpty().withMessage(`Shouldn't be empty`)
     .isString().withMessage('Should be string type')
 
-export const passwordValidation = body('password').trim()
+export const passwordFromAuthValidation = body('password').trim()
     .notEmpty().withMessage(`Shouldn't be empty`)
     .isString().withMessage('Should be string type')

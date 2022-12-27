@@ -1,18 +1,21 @@
 import {Router, Response} from "express";
-import {loginOrEmailValidation, passwordValidation} from "../middleware/input-auth-validation";
+import {
+    loginOrEmailValidation,
+    passwordFromAuthValidation
+} from "../middleware/input-auth-validation";
 import {inputValidation} from "../middleware/input-validation";
 import {RequestWithBody} from "../models/types";
-import {BlogsTypeInput} from "../models/auth-models";
+import {LoginTypeInput} from "../models/auth-models";
 import {usersService} from "../domain/users-service";
 import {HTTP_STATUSES} from "../constats/status";
 
 export const authRouter = Router({})
 
-authRouter.post('/login'),
+authRouter.post('/login',
     loginOrEmailValidation,
-    passwordValidation,
+    passwordFromAuthValidation,
     inputValidation,
-    async(req: RequestWithBody<BlogsTypeInput>,
+    async(req: RequestWithBody<LoginTypeInput>,
           res: Response) => {
     const checkResult = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if(checkResult) {
@@ -20,4 +23,4 @@ authRouter.post('/login'),
         return
     }
     res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
-}
+})
