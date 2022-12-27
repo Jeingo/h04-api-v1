@@ -15,20 +15,21 @@ import {
     RequestWithParamsAndQuery,
     RequestWithQuery
 } from "../models/types"
-import {BlogsIdParams, BlogsTypeInput, BlogsTypeOutput, BlogsTypeWithQuery} from "../models/blogs-models"
+import {BlogsIdParams, BlogsTypeInput, BlogsTypeOutput} from "../models/blogs-models"
 import {contentValidation, shortDescriptionValidation, titleValidation} from "../middleware/input-posts-validation";
-import {PostsIdParams, PostsTypeInputInBlog, PostsTypeOutput, PostsTypeWithQuery} from "../models/posts-models";
+import {PostsIdParams, PostsTypeInputInBlog, PostsTypeOutput} from "../models/posts-models";
 import {postsService} from "../domain/posts-service";
 import {blogsQueryRepository} from "../query-reositories/blogs-query-repository";
 import {postsQueryRepository} from "../query-reositories/posts-query-repository";
 import {QueryBlogs} from "../models/query-models";
+import {PaginatedType} from "../models/main-models";
 
 
 export const blogsRouter = Router({})
 
 blogsRouter.get('/',
     queryValidation,
-    async (req: RequestWithQuery<QueryBlogs>, res: Response<BlogsTypeWithQuery>) => {
+    async (req: RequestWithQuery<QueryBlogs>, res: Response<PaginatedType<BlogsTypeOutput>>) => {
     const allBlogs = await blogsQueryRepository.getAllBlogs(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allBlogs)
 })
@@ -50,7 +51,7 @@ blogsRouter.get('/:id',
 blogsRouter.get('/:id/posts',
     idValidation,
     queryValidation,
-    async (req: RequestWithParamsAndQuery<PostsIdParams, QueryBlogs>, res: Response<PostsTypeWithQuery | null>) => {
+    async (req: RequestWithParamsAndQuery<PostsIdParams, QueryBlogs>, res: Response<PaginatedType<PostsTypeOutput> | null>) => {
         const foundPosts = await postsQueryRepository.getPostsById(req.params.id, req.query)
 
         if (!foundPosts) {

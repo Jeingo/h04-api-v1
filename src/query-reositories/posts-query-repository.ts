@@ -1,7 +1,9 @@
-import {PostsTypeOutput, PostsTypeWithQuery} from "../models/posts-models"
+import {PostsTypeOutput} from "../models/posts-models"
 import {blogsCollection, postsCollection} from "../repositories/db"
 import {ObjectId} from "mongodb"
 import {QueryPosts} from "../models/query-models";
+import {PaginatedType} from "../models/main-models";
+import {getPaginatedType} from "./helper";
 
 const getOutputPost = (post: any): PostsTypeOutput => {
     return {
@@ -15,18 +17,18 @@ const getOutputPost = (post: any): PostsTypeOutput => {
     }
 }
 
-const getOutputPostWithQuery = (posts: PostsTypeOutput[],
-                                pS: number,
-                                pN: number,
-                                countDoc: number) : PostsTypeWithQuery => {
-    return {
-        pagesCount: Math.ceil(countDoc/pS),
-        page: pN,
-        pageSize: pS,
-        totalCount: countDoc,
-        items: posts
-    }
-}
+// const getOutputPostWithQuery = (posts: PostsTypeOutput[],
+//                                 pS: number,
+//                                 pN: number,
+//                                 countDoc: number) : PaginatedType<PostsTypeOutput> => {
+//     return {
+//         pagesCount: Math.ceil(countDoc/pS),
+//         page: pN,
+//         pageSize: pS,
+//         totalCount: countDoc,
+//         items: posts
+//     }
+// }
 
 const makeDirectionToNumber = (val: string) => {
     switch(val) {
@@ -40,7 +42,7 @@ const makeDirectionToNumber = (val: string) => {
 }
 
 export const postsQueryRepository = {
-    async getAllPost(query: QueryPosts) {
+    async getAllPost(query: QueryPosts): Promise<PaginatedType<PostsTypeOutput>> {
         const countAllDocuments = await postsCollection.countDocuments()
         const {sortBy = 'createdAt', sortDirection = 'desc', pageNumber = 1, pageSize = 10} = query
         const sortDirectionNumber = makeDirectionToNumber(sortDirection)
@@ -51,9 +53,9 @@ export const postsQueryRepository = {
             .skip(skipNumber)
             .limit(+pageSize)
             .toArray()
-        return getOutputPostWithQuery(res.map(getOutputPost), +pageSize, +pageNumber, countAllDocuments)
+        return getPaginatedType(res.map(getOutputPost), +pageSize, +pageNumber, countAllDocuments)
     },
-    async getPostsById(id: string, query: QueryPosts) {
+    async getPostsById(id: string, query: QueryPosts): Promise<PaginatedType<PostsTypeOutput> | null> {
         const foundBlogs = await blogsCollection.findOne({_id: new ObjectId(id)})
         if(!foundBlogs) {
             return null
@@ -69,6 +71,6 @@ export const postsQueryRepository = {
             .limit(+pageSize)
             .toArray()
 
-        return getOutputPostWithQuery(res.map(getOutputPost), +pageSize, +pageNumber, countAllDocuments)
+        return getPaginatedType(res.map(getOutputPost), +pageSize, +pageNumber, countAllDocuments)
     }
 }

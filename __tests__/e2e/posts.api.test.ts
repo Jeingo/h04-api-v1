@@ -1,8 +1,9 @@
 import request from 'supertest'
 import {app} from '../../src/app'
 import {HTTP_STATUSES} from '../../src/constats/status'
-import {PostsTypeInput, PostsTypeWithQuery} from "../../src/models/posts-models"
+import {PostsTypeInput, PostsTypeOutput} from "../../src/models/posts-models"
 import {BlogsTypeInput} from "../../src/models/blogs-models"
+import {PaginatedType} from "../../src/models/main-models";
 
 const correctBlog: BlogsTypeInput = {
     name: 'Name',
@@ -32,7 +33,7 @@ const incorrectPost: PostsTypeInput = {
     blogId: ''
 }
 
-const emptyPosts: PostsTypeWithQuery =
+const emptyPosts: PaginatedType<PostsTypeOutput> =
     {
         "pagesCount": 0,
         "page": 1,

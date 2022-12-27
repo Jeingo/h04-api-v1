@@ -30,14 +30,6 @@ export type PostsTypeToDB = {
     createdAt: string
 }
 
-export type PostsTypeWithQuery = {
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: PostsTypeOutput[]
-}
-
 export type PostsIdParams = {
     id: string
 }

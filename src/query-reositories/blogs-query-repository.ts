@@ -1,6 +1,8 @@
-import {BlogsTypeOutput, BlogsTypeWithQuery} from "../models/blogs-models"
+import {BlogsTypeOutput} from "../models/blogs-models"
 import {blogsCollection} from "../repositories/db"
 import {QueryBlogs} from "../models/query-models"
+import {PaginatedType} from "../models/main-models";
+import {getPaginatedType} from "./helper";
 
 const getOutputBlog = (blog: any): BlogsTypeOutput => {
     return {
@@ -12,19 +14,19 @@ const getOutputBlog = (blog: any): BlogsTypeOutput => {
     }
 }
 
-const getOutputBlogWithQuery = (blogs: BlogsTypeOutput[],
-                                pS: number,
-                                pN: number,
-                                countDoc: number): BlogsTypeWithQuery => {
-    const res = {
-        pagesCount: Math.ceil(countDoc / pS),
-        page: pN,
-        pageSize: pS,
-        totalCount: countDoc,
-        items: blogs
-    }
-    return res
-}
+// const getOutputBlogWithQuery = (blogs: BlogsTypeOutput[],
+//                                 pS: number,
+//                                 pN: number,
+//                                 countDoc: number): PaginatedType<BlogsTypeOutput> => {
+//     const res = {
+//         pagesCount: Math.ceil(countDoc / pS),
+//         page: pN,
+//         pageSize: pS,
+//         totalCount: countDoc,
+//         items: blogs
+//     }
+//     return res
+// }
 
 const makeDirectionToNumber = (val: string) => {
     switch (val) {
@@ -38,7 +40,7 @@ const makeDirectionToNumber = (val: string) => {
 }
 
 export const blogsQueryRepository = {
-    async getAllBlogs(query: QueryBlogs) {
+    async getAllBlogs(query: QueryBlogs): Promise<PaginatedType<BlogsTypeOutput>> {
         const {
             searchNameTerm = null,
             sortBy = 'createdAt',
@@ -59,6 +61,6 @@ export const blogsQueryRepository = {
             .skip(skipNumber)
             .limit(+pageSize)
             .toArray()
-        return getOutputBlogWithQuery(res.map(getOutputBlog), +pageSize, +pageNumber, countAllDocuments)
+        return getPaginatedType(res.map(getOutputBlog), +pageSize, +pageNumber, countAllDocuments)
     }
 }
