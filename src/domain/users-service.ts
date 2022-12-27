@@ -16,10 +16,5 @@ export const usersService = {
     },
     async deleteUser(id: string) {
         return await usersRepository.deleteUser(id)
-    },
-    async checkCredentials(loginOrEmail: string, password: string) {
-        const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
-        if(!user) return false
-        return await bcrypt.compare(password,user.hash)
     }
 }
