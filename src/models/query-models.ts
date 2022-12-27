@@ -12,3 +12,12 @@ export type QueryPosts = {
     pageNumber: number
     pageSize: number
 }
+
+export type QueryUsers = {
+    searchLoginTerm: string | null
+    searchEmailTerm: string | null
+    sortBy: string
+    sortDirection: 'asc' | 'desc'
+    pageNumber: number
+    pageSize: number
+}

@@ -19,3 +19,4 @@ export const runDb = async () => {
 const db = client.db('service')
 export const blogsCollection = db.collection('blogs')
 export const postsCollection = db.collection('posts')
+export const usersCollection = db.collection('users')
