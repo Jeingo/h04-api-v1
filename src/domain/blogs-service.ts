@@ -1,10 +1,11 @@
 import {blogsRepository} from "../repositories/blogs-repository"
+import {BlogsTypeOutput} from "../models/blogs-models";
 
 export const blogsService = {
-    async getBlogById(id: string) {
+    async getBlogById(id: string): Promise<BlogsTypeOutput | null> {
         return await blogsRepository.getBlogById(id)
     },
-    async createBlog(name: string, desc: string, url: string) {
+    async createBlog(name: string, desc: string, url: string): Promise<BlogsTypeOutput> {
         const createdBlog = {
             name: name,
             description: desc,
@@ -13,10 +14,10 @@ export const blogsService = {
         }
         return await blogsRepository.createBlog(createdBlog)
     },
-    async updateBlog(id: string, name: string, desc: string, url: string) {
+    async updateBlog(id: string, name: string, desc: string, url: string): Promise<boolean> {
         return await blogsRepository.updateBlog(id, name, desc, url)
     },
-    async deleteBlog(id: string) {
+    async deleteBlog(id: string): Promise<boolean> {
         return await blogsRepository.deleteBlog(id)
     }
 }

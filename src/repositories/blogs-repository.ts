@@ -13,7 +13,7 @@ const getOutputBlog = (blog: any): BlogsTypeOutput => {
 }
 
 export const blogsRepository = {
-    async getBlogById(id: string) {
+    async getBlogById(id: string): Promise<BlogsTypeOutput | null> {
         const res = await blogsCollection.findOne({_id: new ObjectId(id)})
 
         if(res) {
@@ -21,7 +21,7 @@ export const blogsRepository = {
         }
         return null
     },
-    async createBlog(createdBlog: BlogsTypeToDB) {
+    async createBlog(createdBlog: BlogsTypeToDB): Promise<BlogsTypeOutput> {
         const res = await blogsCollection.insertOne(createdBlog)
         return {
             id: res.insertedId.toString(),
@@ -31,12 +31,12 @@ export const blogsRepository = {
             createdAt: createdBlog.createdAt
         }
     },
-    async updateBlog(id: string, name: string, desc: string, url: string) {
+    async updateBlog(id: string, name: string, desc: string, url: string): Promise<boolean> {
         const result = await blogsCollection
             .updateOne({_id: new ObjectId(id)},{$set: {name: name, description: desc, websiteUrl: url}})
         return result.matchedCount === 1
     },
-    async deleteBlog(id: string) {
+    async deleteBlog(id: string): Promise<boolean> {
         const result = await blogsCollection.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }

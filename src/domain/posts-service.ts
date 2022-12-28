@@ -1,14 +1,12 @@
 import {postsRepository} from "../repositories/posts-repository"
 import {blogsRepository} from "../repositories/blogs-repository"
+import {PostsTypeOutput} from "../models/posts-models";
 
 export const postsService = {
-    async getPostById(id: string) {
+    async getPostById(id: string): Promise<PostsTypeOutput | null> {
         return await postsRepository.getPostById(id)
     },
-    async getPostsById(id: string) {
-        return await postsRepository.getPostsById(id)
-    },
-    async createPost(title: string, desc: string, content: string, blogId: string) {
+    async createPost(title: string, desc: string, content: string, blogId: string): Promise<PostsTypeOutput | null> {
         const foundBlog = await blogsRepository.getBlogById(blogId)
         if(foundBlog) {
             const createdPost = {
@@ -23,14 +21,14 @@ export const postsService = {
         }
         return null
     },
-    async updatePost(id: string, title: string, desc: string, content: string, blogId: string) {
+    async updatePost(id: string, title: string, desc: string, content: string, blogId: string): Promise<boolean | null> {
         const foundBlog = await blogsRepository.getBlogById(blogId)
         if(foundBlog) {
             return await postsRepository.updatePost(id, title, desc, content, blogId, foundBlog.name)
         }
         return null
     },
-    async deletePost(id: string) {
+    async deletePost(id: string): Promise<boolean> {
         return await postsRepository.deletePost(id)
     }
 }

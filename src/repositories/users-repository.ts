@@ -1,9 +1,9 @@
-import {UsersTypeToDB} from "../models/users-models";
+import {UsersTypeOutput, UsersTypeToDB} from "../models/users-models";
 import {usersCollection} from "./db";
 import {ObjectId} from "mongodb";
 
 export const usersRepository = {
-    async createUser(createdUser: UsersTypeToDB) {
+    async createUser(createdUser: UsersTypeToDB): Promise<UsersTypeOutput> {
         const res = await usersCollection.insertOne(createdUser)
         return {
             id: res.insertedId.toString(),
@@ -12,7 +12,7 @@ export const usersRepository = {
             createdAt: createdUser.createdAt
         }
     },
-    async deleteUser(id: string) {
+    async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }

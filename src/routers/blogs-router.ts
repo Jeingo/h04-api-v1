@@ -34,11 +34,9 @@ blogsRouter.get('/',
     res.status(HTTP_STATUSES.OK_200).json(allBlogs)
 })
 
-
 blogsRouter.get('/:id',
     idValidation,
-    async (req: RequestWithParams<BlogsIdParams>,
-                               res: Response<BlogsTypeOutput>) => {
+    async (req: RequestWithParams<BlogsIdParams>, res: Response<BlogsTypeOutput>) => {
     const foundBlog = await blogsService.getBlogById(req.params.id)
 
     if (!foundBlog) {
@@ -82,7 +80,7 @@ blogsRouter.post('/:id/posts',
     contentValidation,
     inputValidation,
     async (req: RequestWithParamsAndBody<PostsIdParams, PostsTypeInputInBlog>,
-           res: Response<PostsTypeOutput | null>) => {
+           res: Response<PostsTypeOutput>) => {
         const createdPost = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.params.id)
 
         if (!createdPost) {
